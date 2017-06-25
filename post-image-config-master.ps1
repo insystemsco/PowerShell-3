@@ -94,11 +94,11 @@ $Password = Read-Host 'Enter Your Password' -AsSecureString
             4 {$subOU = "OU04"}
             5 {$subOU = "OU05"}
             6 {$subOU = "OU06"}
-            6 {$subOU = "OU07"}
-            6 {$subOU = "OU08"}
-            6 {$subOU = "OU09"}
-            6 {$subOU = "OUA"}
-            6 {$subOU = "OUB"}
+            7 {$subOU = "OU07"}
+            8 {$subOU = "OU08"}
+            9 {$subOU = "OU09"}
+            A {$subOU = "OUA"}
+            B {$subOU = "OUB"}
 
         }
 

@@ -79,7 +79,9 @@ function NetworkSettings {
     -PrefixLength $MaskBits `
     -DefaultGateway $Gateway
 
-    Start-Sleep -Seconds 4 # 4-second delay is required for changes to take effect.  If fewer, the first connection attempt will fail
+    Set-DnsClientServerAddress -InterfaceAlias $Adapter -ServerAddresses ($DNS1,$DNS2)
+
+    Start-Sleep -Seconds 2 #delay is required for changes to take effect.
 
     Write-Host "Assigning IP: $subnet.$newIP"
     Write-Host "Rerun if this IP conflicts..."

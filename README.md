@@ -1,6 +1,7 @@
 ## Windows 10 Deployment
 
-These are a collection of scripts that I've written to help automate a Windows 10 deployment.
+The Microsoft Deployment Toolkit is probably the most beloved Operating System Deployment platorm by those who understand it and often scoffed at by those who do not.  There are several reasons for praise:  it's flexibility and large-scale efficiency are second to none.  Oh, and by the way, it's FREE!  But it is not without its flaws.  To the unintiated, MDT is finiky, unreliable, and requires significant time and effort to re-learn OSD.
 
-An ideal Zero Touch Installation unfortunately is not possible because our MDT server is on a physically seperated LAN.
+On my quest to educate 
+
 
