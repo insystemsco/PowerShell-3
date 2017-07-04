@@ -8,59 +8,94 @@
     Contact: carl.l.hill@outlook.com
    
 .EXAMPLE
-    Create a file named transferlist.csv in the same folder as this script.
+    Create a .csv file using the below format:
 
     Source,Target
     source001,target001
     source002,target002
     source003,target003
+
+    Use the -computerlist or -csv parameter
+    .\data-transfer -computerlist mylist.csv
+    .\data-transfer -csv mylist.csv
+
 #>
 
+#Requires -RunAsAdministrator
+
+Param(
+    [Parameter(Mandatory=$True)]
+    [alias("csv")]
+    [string]$computerlist
+)
+
+# Functions (for brevity)
+function stageprogress {
+    Write-Progress -Id 2 -Activity "Transferring Data" -Status "$s" -CurrentOperation "Copying $Source to $Target" -PercentComplete (0)
+}
+
+function stagecomplete {
+    Write-Host "Stage" $s "Complete"
+}
+
+# Start Variables
 $logpath = "C:\Users\$env:USERNAME\Documents\copylogs"
-$csv = Import-Csv .\transferlist.csv
 $i = 0
-$total = $csv.Count
+$total = $computerlist.Count
+# End Variables
 
 foreach ($computer in $csv) {
 
     $Source = $computer.Source
     $Target = $computer.Target
 
-    Start-Transcript -Path "$logpath\$Source to $Target-log.txt" -Force
+    Start-Transcript -Path "$logpath\$Source to $Target-log.txt" -Force -Append
 
     $i++
-
-
+    $s = 1 # resets the Stage number to 1 for each computer pair
+    
     Write-Progress -Id 1 -Activity "Transferring dataset $i of $total" -PercentComplete (($i-1) /$total *100)
 
     # Stage 1
-        Write-Progress -Id 2 -Activity "Transferring Data" -Status "Stage 1" -CurrentOperation "Copying $Source to $Target" -PercentComplete (0)
-        Start-Sleep -Seconds 2 # this simulates an operation such as copying files from $Source to $Target
+        stageprogress
+        Start-Sleep -Seconds 1 # simulates an action
         # Copy-Item -Path \\$Source\C$\filepath -Destination \\$Target\C$\otherfilepath
-        Write-Host "Stage 1 Complete"
-
+        stagecomplete
+        $s++
+        
     # Stage 2
-        Write-Progress -Id 2  -Activity "Transferring Data" -Status "Stage 2" -CurrentOperation "Copying $Source to $Target" -PercentComplete (25)
-        Start-Sleep -Seconds 2
-        Write-Host "Stage 2 Complete"
+        stageprogress
+        Start-Sleep -Seconds 2 
+        stagecomplete
+        $s++
 
     # Stage 3
-        Write-Progress -Id 2 -Activity "Transferring Data" -Status "Stage 3" -CurrentOperation "Copying $Source to $Target" -PercentComplete (50)
-        Start-Sleep -Seconds 2
-        Write-Host "Stage 3 Complete"
+        stageprogress
+        Start-Sleep -Seconds 3
+        stagecomplete
+        $s++
 
     # Stage 4
-        Write-Progress -Id 2 -Activity "Transferring Data" -Status "Stage 4" -CurrentOperation "Copying $Source to $Target" -PercentComplete (75)
-        Start-Sleep -Seconds 2
-        Write-Host "Stage 4 Complete"
+        stageprogress
+        Start-Sleep -Seconds 4
+        stagecomplete
+        $s++
 
     # All Stages Complete
         Write-Progress -Id 2 -Activity "Transferring Data" -Status "All Stages Complete" -CurrentOperation "Copying $Source to $Target" -PercentComplete (100)
         Write-Host "All Stages Complete"
         Start-Sleep -Seconds 2
-        Stop-Transcript
+    
+    Stop-Transcript
 
 }
 
 Write-Progress -Id 1 -Activity "Transferring dataset $i of $total" -PercentComplete (($i) /$total *100)
-    Start-Sleep -Seconds 3
+
+# GUI box    
+$msgBoxInput =  [System.Windows.MessageBox]::Show('Would you like to view the log files now?','Data Transfer Complete!','YesNo','Exclamation')
+
+switch  ($msgBoxInput) {
+    'Yes' {& explorer.exe $logpath}
+    'No' {exit}
+}
