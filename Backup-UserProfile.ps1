@@ -51,21 +51,21 @@ function Backup-UserProfile {
             
             Write-Verbose "OS is Windows 7"
             $ExcludeItems = @(
-                "C:\Users\$UserProfileName\AppData\Local\Microsoft\Internet Explorer\IECompatData\"
-                "C:\Users\$UserProfileName\AppData\Local\Microsoft\Feeds Cache\"
-                "C:\Users\$UserProfileName\AppData\Local\Microsoft\Windows\WebCache\"
-                "C:\Users\$UserProfileName\AppData\Local\Microsoft\Windows\History\"
-                "C:\Users\$UserProfileName\AppData\Local\Microsoft\Windows\Temporary Internet Files\"
-                "C:\Users\$UserProfileName\AppData\Local\Temp\"
-                "C:\Users\$UserProfileName\AppData\LocalLow\Microsoft\Internet Explorer\DOMStore\"
-                "C:\Users\$UserProfileName\AppData\Roaming\Microsoft\Internet Explorer\UserData\"
-                "C:\Users\$UserProfileName\AppData\Roaming\Microsoft\Windows\Cookies\"
-                "C:\Users\$UserProfileName\AppData\Roaming\Microsoft\Windows\DNTException\"
-                "C:\Users\$UserProfileName\AppData\Roaming\Microsoft\Windows\IECompatCache\"
-                "C:\Users\$UserProfileName\AppData\Roaming\Microsoft\Windows\IECompatUACache\"
-                "C:\Users\$UserProfileName\AppData\Roaming\Microsoft\Windows\IEDownloadHistory\"
-                "C:\Users\$UserProfileName\AppData\Roaming\Microsoft\Windows\IETldCache\"
-                "C:\Users\$UserProfileName\AppData\Roaming\Microsoft\Windows\PrivacIE\"
+                "\\$ComputerName\C$\$UserProfileName\AppData\Local\Microsoft\Internet Explorer\IECompatData\"
+                "\\$ComputerName\C$\$UserProfileName\AppData\Local\Microsoft\Feeds Cache\"
+                "\\$ComputerName\C$\$UserProfileName\AppData\Local\Microsoft\Windows\WebCache\"
+                "\\$ComputerName\C$\$UserProfileName\AppData\Local\Microsoft\Windows\History\"
+                "\\$ComputerName\C$\$UserProfileName\AppData\Local\Microsoft\Windows\Temporary Internet Files\"
+                "\\$ComputerName\C$\$UserProfileName\AppData\Local\Temp\"
+                "\\$ComputerName\C$\$UserProfileName\AppData\LocalLow\Microsoft\Internet Explorer\DOMStore\"
+                "\\$ComputerName\C$\$UserProfileName\AppData\Roaming\Microsoft\Internet Explorer\UserData\"
+                "\\$ComputerName\C$\$UserProfileName\AppData\Roaming\Microsoft\Windows\Cookies\"
+                "\\$ComputerName\C$\$UserProfileName\AppData\Roaming\Microsoft\Windows\DNTException\"
+                "\\$ComputerName\C$\$UserProfileName\AppData\Roaming\Microsoft\Windows\IECompatCache\"
+                "\\$ComputerName\C$\$UserProfileName\AppData\Roaming\Microsoft\Windows\IECompatUACache\"
+                "\\$ComputerName\C$\$UserProfileName\AppData\Roaming\Microsoft\Windows\IEDownloadHistory\"
+                "\\$ComputerName\C$\$UserProfileName\AppData\Roaming\Microsoft\Windows\IETldCache\"
+                "\\$ComputerName\C$\$UserProfileName\AppData\Roaming\Microsoft\Windows\PrivacIE\"
             )
         }
 
@@ -73,10 +73,10 @@ function Backup-UserProfile {
             
             Write-Verbose "OS is Windows 10"
             $ExcludeItems = @(
-                "C:\Users\$UserProfileName\AppData\Local\Temp"
-                "C:\Users\$UserProfileName\AppData\Local\Microsoft\INetCache"
-                "C:\Users\$UserProfileName\AppData\Local\Packages\Microsoft.MicrosoftEdge*\AC\#!001\MicrosoftEdge\Cache\"
-                "C:\Users\$UserProfileName\AppData\Roaming\Microsoft\Internet Explorer\UserData\"
+                "\\$ComputerName\C$\$UserProfileName\AppData\Local\Temp"
+                "\\$ComputerName\C$\$UserProfileName\AppData\Local\Microsoft\INetCache"
+                "\\$ComputerName\C$\$UserProfileName\AppData\Local\Packages\Microsoft.MicrosoftEdge*\AC\#!001\MicrosoftEdge\Cache\"
+                "\\$ComputerName\C$\$UserProfileName\AppData\Roaming\Microsoft\Internet Explorer\UserData\"
             )
         }
 
@@ -94,8 +94,8 @@ function Backup-UserProfile {
             # Set-Acl for IT support security group(s)
             $domain = "karl.lab"
             $SecurityGroups = @(
-            "testgroup1"
-            "testgroup2"
+                "testgroup1"
+                "testgroup2"
             )
             
             foreach ($Group in $SecurityGroups) {
@@ -113,6 +113,7 @@ function Backup-UserProfile {
 
 
             # Search for all PSTs and moves them to Desktop folder.
+            # Oftentimes, users leave PSTs in the default AppData folder (which is hidden)
             Write-Verbose "Creating PST folder on the Desktop..."
             New-Item -ItemType Directory -Path \\$ComputerName\C$\Users\$UserProfileName\Desktop\PSTs -Verbose
             
