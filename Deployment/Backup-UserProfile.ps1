@@ -5,18 +5,19 @@ function Backup-UserProfile {
        Creates a backup of a user profile folder.
    
    .DESCRIPTION
-        Performs a search for all PST files and moves to the Desktop folder
-        Creates a new folder onto the backup server and modifies that folder's ACL to add a security group with full contol.
-        Then performs a recursive copy of the user profile folder
-        Excludes the PowerShell transcripts in the Documents folder
-        Excludes IE & Firefox cache folders
+        Creates a folder on the Win10 migration share and copies the user profile folder from a network computer to the share.
+        Performs a search for all PST files and moves to the Desktop folder.
+        Modifies the Share folder's ACL to add a security group(s) with full contol.
+        Then performs a recursive copy of the user profile folder.
+        Excludes the PowerShell transcripts in the Documents folder.
+        Excludes IE cache folders.
 
         
    .PARAMETER UserProfileName
        The name of the user profile folder.
    
    .EXAMPLE
-       Backup-UserProfile -ComputerName ASDF1234 -UserProfileName 1234567890.ptc
+       Backup-UserProfile -ComputerName ASDF1234 -UserProfileName 1234567890.sam
 
    .NOTES
        Contact: carl.l.hill@outlook.com
@@ -42,7 +43,7 @@ function Backup-UserProfile {
         $logfile = "Backup-UserProfile - $($UserProfileName) - $($ComputerName) $($date).txt"
         Start-Transcript -Path $logpath\$logfile -Append -Force
         
-        $BackupShare = \\server\share
+        $BackupShare = "\\server\share"
         
         
         # Set IE cache location based on OS version
@@ -51,21 +52,21 @@ function Backup-UserProfile {
             
             Write-Verbose "OS is Windows 7"
             $ExcludeItems = @(
-                "\\$ComputerName\C$\$UserProfileName\AppData\Local\Microsoft\Internet Explorer\IECompatData\"
-                "\\$ComputerName\C$\$UserProfileName\AppData\Local\Microsoft\Feeds Cache\"
-                "\\$ComputerName\C$\$UserProfileName\AppData\Local\Microsoft\Windows\WebCache\"
-                "\\$ComputerName\C$\$UserProfileName\AppData\Local\Microsoft\Windows\History\"
-                "\\$ComputerName\C$\$UserProfileName\AppData\Local\Microsoft\Windows\Temporary Internet Files\"
-                "\\$ComputerName\C$\$UserProfileName\AppData\Local\Temp\"
-                "\\$ComputerName\C$\$UserProfileName\AppData\LocalLow\Microsoft\Internet Explorer\DOMStore\"
-                "\\$ComputerName\C$\$UserProfileName\AppData\Roaming\Microsoft\Internet Explorer\UserData\"
-                "\\$ComputerName\C$\$UserProfileName\AppData\Roaming\Microsoft\Windows\Cookies\"
-                "\\$ComputerName\C$\$UserProfileName\AppData\Roaming\Microsoft\Windows\DNTException\"
-                "\\$ComputerName\C$\$UserProfileName\AppData\Roaming\Microsoft\Windows\IECompatCache\"
-                "\\$ComputerName\C$\$UserProfileName\AppData\Roaming\Microsoft\Windows\IECompatUACache\"
-                "\\$ComputerName\C$\$UserProfileName\AppData\Roaming\Microsoft\Windows\IEDownloadHistory\"
-                "\\$ComputerName\C$\$UserProfileName\AppData\Roaming\Microsoft\Windows\IETldCache\"
-                "\\$ComputerName\C$\$UserProfileName\AppData\Roaming\Microsoft\Windows\PrivacIE\"
+                "\\$ComputerName\C$\Users\$UserProfileName\AppData\Local\Microsoft\Internet Explorer\IECompatData\"
+                "\\$ComputerName\C$\Users\$UserProfileName\AppData\Local\Microsoft\Feeds Cache\"
+                "\\$ComputerName\C$\Users\$UserProfileName\AppData\Local\Microsoft\Windows\WebCache\"
+                "\\$ComputerName\C$\Users\$UserProfileName\AppData\Local\Microsoft\Windows\History\"
+                "\\$ComputerName\C$\Users\$UserProfileName\AppData\Local\Microsoft\Windows\Temporary Internet Files\"
+                "\\$ComputerName\C$\Users\$UserProfileName\AppData\Local\Temp\"
+                "\\$ComputerName\C$\Users\$UserProfileName\AppData\LocalLow\Microsoft\Internet Explorer\DOMStore\"
+                "\\$ComputerName\C$\Users\$UserProfileName\AppData\Roaming\Microsoft\Internet Explorer\UserData\"
+                "\\$ComputerName\C$\Users\$UserProfileName\AppData\Roaming\Microsoft\Windows\Cookies\"
+                "\\$ComputerName\C$\Users\$UserProfileName\AppData\Roaming\Microsoft\Windows\DNTException\"
+                "\\$ComputerName\C$\Users\$UserProfileName\AppData\Roaming\Microsoft\Windows\IECompatCache\"
+                "\\$ComputerName\C$\Users\$UserProfileName\AppData\Roaming\Microsoft\Windows\IECompatUACache\"
+                "\\$ComputerName\C$\Users\$UserProfileName\AppData\Roaming\Microsoft\Windows\IEDownloadHistory\"
+                "\\$ComputerName\C$\Users\$UserProfileName\AppData\Roaming\Microsoft\Windows\IETldCache\"
+                "\\$ComputerName\C$\Users\$UserProfileName\AppData\Roaming\Microsoft\Windows\PrivacIE\"
             )
         }
 
@@ -73,10 +74,10 @@ function Backup-UserProfile {
             
             Write-Verbose "OS is Windows 10"
             $ExcludeItems = @(
-                "\\$ComputerName\C$\$UserProfileName\AppData\Local\Temp"
-                "\\$ComputerName\C$\$UserProfileName\AppData\Local\Microsoft\INetCache"
-                "\\$ComputerName\C$\$UserProfileName\AppData\Local\Packages\Microsoft.MicrosoftEdge*\AC\#!001\MicrosoftEdge\Cache\"
-                "\\$ComputerName\C$\$UserProfileName\AppData\Roaming\Microsoft\Internet Explorer\UserData\"
+                "\\$ComputerName\C$\Users\$UserProfileName\AppData\Local\Temp"
+                "\\$ComputerName\C$\Users\$UserProfileName\AppData\Local\Microsoft\INetCache"
+                "\\$ComputerName\C$\Users\$UserProfileName\AppData\Local\Packages\Microsoft.MicrosoftEdge*\AC\#!001\MicrosoftEdge\Cache\"
+                "\\$ComputerName\C$\Users\$UserProfileName\AppData\Roaming\Microsoft\Internet Explorer\UserData\"
             )
         }
 
@@ -94,8 +95,8 @@ function Backup-UserProfile {
             # Set-Acl for IT support security group(s)
             $domain = "karl.lab"
             $SecurityGroups = @(
-                "testgroup1"
-                "testgroup2"
+            "Administrators"
+            "Domain Admins"
             )
             
             foreach ($Group in $SecurityGroups) {
@@ -112,38 +113,38 @@ function Backup-UserProfile {
             Set-Acl "$BackupShare\$UserProfileName" $Acl
 
 
-            # Search for all PSTs and moves them to Desktop folder.
-            # Oftentimes, users leave PSTs in the default AppData folder (which is hidden)
-            Write-Verbose "Creating PST folder on the Desktop..."
-            New-Item -ItemType Directory -Path \\$ComputerName\C$\Users\$UserProfileName\Desktop\PSTs -Verbose
+            # Search for all PSTs and moves them to Desktop folder if they are outside of the profile folder.
             
-            Write-Verbose "Searching for PSTs..."
-            Get-Childitem –Path \\$ComputerName\C$\ -Include *.pst -File -Recurse -ErrorAction SilentlyContinue |
+            Write-Output "Searching for PSTs..."
+            Get-Childitem –Path "\\$ComputerName\C$\" -Include *.pst -File -Recurse -ErrorAction SilentlyContinue |
             ForEach-Object {
                 Write-Output "Found $_"
-                Move-Item -Path $_.FullName -Destination \\$ComputerName\C$\Users\$UserProfileName\Desktop\PSTs -Verbose
+                "$_" >> \\$ComputerName\C$\Users\$UserProfileName\Documents\PSTs.txt
+                if ("$_" -notmatch "$UserProfileName") {
+                    Move-Item $_ "\\$BackupShare\$UserProfileName\Documents\Outlook Files" -Verbose
+                }
             }
 
 
-            # Remove PowerShell transcript folders from Documents
-            Write-Verbose "Removing the PowerShell transcript folders from Documents..."
+           # Remove PowerShell transcript folders from Documents & the IE Cache
+            Write-Output "Removing the PowerShell transcript folders from Documents..."
             $ri = 0
-            $rmtotal = (Get-Childitem \\$ComputerName\C$\Users\$UserProfileName\Documents\201* -Directory).Count
+            $rmtotal = (Get-Childitem "\\$ComputerName\C$\Users\$UserProfileName\Documents\201*" -Directory).Count
 
-            Get-Childitem \\$ComputerName\C$\Users\$UserProfileName\Documents\201* -Directory |
+            Get-Childitem "\\$ComputerName\C$\Users\$UserProfileName\Documents\201*" -Directory |
             ForEach-Object {
                 $ri++
-                Write-Progress -Activity "Deleting PowerShell Transcripts from Documents" -Status "Removing item $ri of $rmtotal" -PercentComplete (($i/$total)*100)
-                Remove-Item $_.FullName -Recurse -Force  
+                Write-Progress -Activity "Deleting PowerShell Transcripts from Documents" -Status "Removing item $ri of $rmtotal" -PercentComplete (($ri/$rmtotal)*100)
+                Remove-Item $_.FullName -Verbose -Recurse -Force  
             }
             
-              
+            Remove-Item $ExcludeItems -Verbose -Recurse -Force 
+             
+
             # Copies the user profile folder to server & excludes all folders in $ExcludeItems
-            Write-Verbose "Now copying $UserProfileName from $ComputerName to $BackupShare..."
+            Write-Verbose "Now copying $UserProfileName from $ComputerName to $BackupShare..." -Verbose
           
-            Get-Childitem \\$ComputerName\C$\Users\$UserProfileName |
-            Where-Object {$_.FullName -notin $ExcludeItems} |
-            Copy-Item -Destination $BackupShare\$UserProfileName -Exclude $ExcludeItems -Verbose
+            robocopy \\$ComputerName\C$\Users\$UserProfileName $BackupShare\$UserProfileName /E /XJ /V /XD \\$ComputerName\C$\Users\$UserProfileName\Documents\201* /XF *.ost
     
     }
     
