@@ -25,8 +25,7 @@ function Export-BitlockerRecoveryKey {
        [Parameter(Mandatory=$True)]
        [ValidateNotNullOrEmpty()]
        [string]$ExportPath
-   
-   )
+    )
  
     $date = Get-Date -Format yyyy-MM-dd_HHmmss
 
