@@ -1,4 +1,4 @@
-$email = "carl.l.hill.ctr@mail.mil"
+$email = "carl.l.hill.ptc@mail.com"
 
 $result = 0..($email.length - 1) | Where-Object {$email[$_] -eq "."}
 
