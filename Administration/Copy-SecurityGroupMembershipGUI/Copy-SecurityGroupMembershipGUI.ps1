@@ -1,41 +1,50 @@
 #==============================================================================================
 # XAML Code - Imported from Visual Studio Express WPF Application
 #==============================================================================================
-[void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
-[xml]$XAML = @'
+[void][System.Reflection.Assembly]::LoadWithPartialName('PresentationFramework')
+[void][System.Reflection.Assembly]::LoadWithPartialName('PresentationCore')
+[void][System.Reflection.Assembly]::LoadWithPartialName('WindowsBase')
+
+[xml]$xaml = @'
 
 
-<Window
+<Window 
 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 xmlns:local="clr-namespace:WpfApp1"
 
-Title="Copy Security Groups GUI" Height="400" Width="450">
-<Grid Opacity="0.8" Margin="0,0,0,-1.5">
-<Button x:Name="GetGroupsButton" Content="Get Groups" HorizontalAlignment="Center" Margin="196,117,51,0" VerticalAlignment="Top" Width="84" Height="42"/>
+Title="Copy Security Groups GUI" Height="500" Width="500">
+<Grid Margin="0,0,0,-1.5">
+
+<Label Content="Source User" HorizontalAlignment="Center" Margin="158,21,213,0" VerticalAlignment="Top"/>
+
+<TextBox x:Name="SourceUserTextBox" HorizontalAlignment="Center" Height="23" Margin="76,52,146,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="223"/>
+
+<Button x:Name="FindSourceUserButton" HorizontalAlignment="Center" Margin="341,52,0,0" VerticalAlignment="Top" Width="25" ToolTip="Lookup user in Active Directory.">
+    <Image Source=" C:\Windows\System32\WindowsPowerShell\v1.0\Modules\WindowsAdministration\adduser.png" />
+</Button>
+
+<ListBox x:Name="GroupsListBox" HorizontalAlignment="Center" Height="128" Margin="76,95,146,0" VerticalAlignment="Top" Width="223" SelectionMode="Extended"/>
+
+
+<Label Content="Target User" HorizontalAlignment="Center" Margin="163,223,213,0" VerticalAlignment="Top"/>
+
+<TextBox x:Name="TargetUserTextBox" HorizontalAlignment="Center" Height="23" Margin="76,255,146,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="223"/>
+
+<Button x:Name="FindTargetUserButton" HorizontalAlignment="Center" Margin="341,255,0,0" VerticalAlignment="Top" Width="25" ToolTip="Lookup user in Active Directory.">
+    <Image Source=" C:\Windows\System32\WindowsPowerShell\v1.0\Modules\WindowsAdministration\adduser.png" />
+</Button>
+
+
+
 <Button x:Name="AddSelectedGroupsButton" Content="Add Selected Groups" Margin="88,286,89,43" Width="154" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" Height="27">
-    <Button.Effect>
-        <DropShadowEffect/>
-    </Button.Effect>
-</Button>
-<Label Content="Target User" HorizontalAlignment="Center" Margin="66,195,195,0" VerticalAlignment="Top"/>
-<TextBox x:Name="TargetUserTextBox" HorizontalAlignment="Center" Height="23" Margin="48,226,222,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-<TextBlock HorizontalAlignment="Center" Margin="140,230,122,0" TextWrapping="Wrap" Text="@mail.mil" VerticalAlignment="Top" RenderTransformOrigin="2.906,-8.026" Width="59"/>
-<Label Content="Source User" HorizontalAlignment="Center" Margin="66,21,192,0" VerticalAlignment="Top"/>
-<TextBox x:Name="SourceUserTextBox" HorizontalAlignment="Center" Height="23" Margin="19,52,192,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-<TextBlock HorizontalAlignment="Center" Margin="140,55,128,0" TextWrapping="Wrap" Text="@mail.mil" VerticalAlignment="Top" RenderTransformOrigin="2.906,-8.026"/>
+            <Button.Effect>
+                <DropShadowEffect/>
+            </Button.Effect>
+        </Button>
 
-<Button x:Name="FindSourceUserButton" HorizontalAlignment="Center" Margin="150,50,25,0" VerticalAlignment="Top" Width="25" ToolTip="Lookup user in Active Directory.">
-    <Image Source="C:\Users\Rusty Shackleford\GitHub\PowerShell\Administration\Copy-SecurityGroupMembershipGUI\adduser.png" />
-</Button>
-
-<Button x:Name="FindTargetUserButton" HorizontalAlignment="Center" Margin="150,225,25,0" VerticalAlignment="Top" Width="25" ToolTip="Lookup user in Active Directory.">
-    <Image Source="C:\Users\Rusty Shackleford\GitHub\PowerShell\Administration\Copy-SecurityGroupMembershipGUI\adduser.png" />
-</Button>
-
-<ListBox x:Name="GetGrouspListBox" HorizontalAlignment="Center" Height="100" Margin="19,90,150,0" VerticalAlignment="Top" Width="160"/>
 
 </Grid>
 </Window>
@@ -43,34 +52,59 @@ Title="Copy Security Groups GUI" Height="400" Width="450">
 
 
 '@
-#Read XAML
+
+
+#===========================================================================
+# Read XAML
+#===========================================================================
+
 $reader=(New-Object System.Xml.XmlNodeReader $xaml) 
 try{$Form=[Windows.Markup.XamlReader]::Load( $reader )}
 catch{Write-Host "Unable to load Windows.Markup.XamlReader. Some possible causes for this problem include: .NET Framework is missing PowerShell must be launched with PowerShell -sta, invalid XAML code was encountered."; exit}
 
+
 #===========================================================================
 # Store Form Objects In PowerShell
 #===========================================================================
-#$xaml.SelectNodes("//*[@Name]") | ForEach-Object {Set-Variable -Name ($_.Name) -Value $Form.FindName($_.Name)}
 
 $SourceUserTextBox = $Form.FindName('SourceUserTextBox')
+$FindTargetUserButton = $Form.FindName('FindTargetUserButton')
 $TargetUserTextBox = $Form.FindName('TargetUserTextBox')
 $FindSourceUserButton = $Form.FindName('FindSourceUserButton')
 $GetGroupsButton = $Form.FindName('GetGroupsButton')
-$GetGroupsListBlock = $Form.FindName('GetGroupsListBlock')
-#
+$GroupsListBox = $Form.FindName('GroupsListBox')
+$AddSelectedGroupsButton = $Form.FindName('AddSelectedGroupsButton')
+
+
 #===========================================================================
 # Add events to Form Objects
 #===========================================================================
+
 $FindSourceUserButton.Add_Click({
-    $user = Get-LocalUser | Out-GridView -PassThru -Title "Name"
-    $SourceUserTextBox.Text =  $user
+    $SourceUser = Get-ADUser -Filter * -SearchBase "OU=Users,DC=KARL,DC=LAB" | Out-GridView -PassThru
+    $SourceUserTextBox.Text =  $SourceUser.Name
+    $SourceSam = $SourceUser.SamAccountName
+
+    $GroupsListBox.Items.Clear()
+
+    $SourceUserGroups = Get-ADUser $SourceSAM -Properties memberof | Select-Object -ExpandProperty memberof
+    $SourceUserGroups | Get-ADGroup | ForEach-Object {$GroupsListBox.Items.Add($_.Name)}
+
 })
 
-$GetGroupsButton.Add_Click({
-    $GetGroupsListBlock = 
+
+
+$FindTargetUserButton.Add_Click({
+    $TargetUser = Get-ADUser -Filter * -SearchBase "OU=Users,DC=KARL,DC=LAB" | Out-GridView -PassThru
+    $TargetUserTextBox.Text =  $TargetUser.Name
 })
 
+
+$AddSelectedGroupsButton.Add_Click({
+    $SelectedGroups = $GroupsListBox.SelectedItems
+    $TargetCN = (Get-ADUser -Filter {Name -eq $TargetUserTextBox.Text})
+    $SelectedGroups | Add-ADGroupMember -Members $TargetCN -Verbose
+})
 
 
 #===========================================================================
