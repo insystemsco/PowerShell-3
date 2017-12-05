@@ -14,7 +14,8 @@ function Play-RandomMovie {
         'C:\AnimatedFilms'
     )
 
-    (Get-ChildItem -Path $MoviePaths -File -Exclude $ExcludedFiletypes -Recurse).FullName |
+    $AllMovies = Get-ChildItem -Path $MoviePaths -File -Exclude $ExcludedFiletypes -Recurse
+    $AllMovies.FullName |
     Get-Random |
     ForEach-Object {mpv $_}
 
