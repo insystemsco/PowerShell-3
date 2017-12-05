@@ -1,26 +1,22 @@
-function Play-RandomMovie {
-        
-        <#
-       .SYNOPSIS
-           Plays a random movie from a folder (includes subfolders).
-            
-       .PARAMETER MoviePath
-           The folder path which contains your movies.
-       
-       .EXAMPLE
-           Play-RandomMovie -MoviePath 'C:\Movies'
+function Play-RandomMovie {   
+    [CmdletBinding()]
+
+    $ExcludedFiletypes = @(
+        '*.sub'
+        '*.srt'
+        '*.jpg'
+        '*.png'
+    )
     
-       #>
-        
-       [CmdletBinding()]
-       Param(
-           [Parameter(Mandatory=$True)]
-           [ValidateNotNullOrEmpty()]
-           [string]$MoviePath
-       )
-    
-Get-ChildItem -Path $MoviePath -File -Recurse |
-Get-Random |
-ForEach-Object {mpv $_.FullName --fullscreen}
+    $MoviePaths = @(
+        'C:\Movies'
+        'C:\Documentaries'
+        'C:\AnimatedFilms'
+    )
+
+    $AllMovies = Get-ChildItem -Path $MoviePaths -File -Exclude $ExcludedFiletypes -Recurse
+    $AllMovies.FullName |
+    Get-Random |
+    ForEach-Object {mpv $_}
 
 }
