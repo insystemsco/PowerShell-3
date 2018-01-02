@@ -17,7 +17,7 @@ function Backup-UserProfile {
        The name of the user profile folder.
    
    .EXAMPLE
-       Backup-UserProfile -ComputerName ASDF1234 -UserProfileName 1234567890.sam
+       Backup-UserProfile -ComputerName ASDF1234 -UserProfileName SamAccountName
 
    .NOTES
        Contact: carl.l.hill@outlook.com
@@ -121,7 +121,7 @@ function Backup-UserProfile {
                 Write-Output "Found $_"
                 "$_" >> \\$ComputerName\C$\Users\$UserProfileName\Documents\PSTs.txt
                 if ("$_" -notmatch "$UserProfileName") {
-                    Move-Item $_ "\\$BackupShare\$UserProfileName\Documents\Outlook Files" -Verbose
+                    Copy-Item $_ "\\$BackupShare\$UserProfileName\Documents\Outlook Files" -Verbose
                 }
             }
 
