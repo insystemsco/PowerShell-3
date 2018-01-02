@@ -21,7 +21,7 @@ function Invoke-ImageValidation {
 
     $GroupMembership = Get-ADComputer $ComputerName -Properties memberof | Select-Object -ExpandProperty MemberOf
 
-if (($GroupMembership -contains "CN=BADGROUP,DC=KARL,DC=LAB") -or ($GroupMembership -contains "CN=BADGROUP2,DC=EUR,DC=KARL,DC=LAB")) {
+if (($GroupMembership -contains "CN=BADGROUP,DC=KARL,DC=LAB") -or ($GroupMembership -contains "CN=BADGROUP2,DC=KARL,DC=LAB")) {
     Write-Error "Computer is in Bad Group!" -Category ResourceExists -RecommendedAction " Repair"
     break
     }
