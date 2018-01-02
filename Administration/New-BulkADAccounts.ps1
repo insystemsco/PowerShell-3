@@ -205,7 +205,7 @@ PROCESS {
 
         # Displays the existing user
         else {
-            Write-Error "A user with DoD ID number $($user.EmployeeID) already exists!" -Category ResourceExists
+            Write-Error "A user with ID number $($user.EmployeeID) already exists!" -Category ResourceExists
             $fails++
         }
 
