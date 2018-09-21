@@ -33,15 +33,15 @@ function Export-BitlockerRecoveryKey {
 
     Get-ADObject -Filter { objectclass -eq "msFVE-RecoveryInformation"} -Properties "msFVE-RecoveryPassword" |
 
-    ForEach-Object {
-        New-Object psobject -Property @{
-        ComputerName = (($_.DistinguishedName -split ',')[1] -join ',') -replace "(CN=)"
-        
-        RecoveryKey = $_.'msFVE-RecoveryPassword'
 
-        DateTime = $($_.Name).Remove(19)
-        }
-    } |
-    Export-Csv -Path $ExportPath\blkeys-$date.csv -NoTypeInformation
+        ForEach-Object {
+            New-Object psobject -Property @{
+            ComputerName = (($_.DistinguishedName -split ',')[1] -join ',') -replace "(CN=)"
+            RecoveryKey = $_.'msFVE-RecoveryPassword'
+            DateTime = $($_.Name).Remove(19)
+            PasswordID = ($_.Name -split '{')[1] -replace '}'
+            }
+        } | Select-Object ComputerName,DateTime,PasswordID,RecoveryKey |
+        Export-Csv -Path $ExportPath\blkeys-$date.csv -NoTypeInformation
      
 }
