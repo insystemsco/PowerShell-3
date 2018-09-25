@@ -9,7 +9,7 @@ function Backup-EpoServer {
 
         .NOTES
         KB article on backup procedures: https://kc.mcafee.com/corporate/index?page=content&id=kb66616
-        Contact: carl.hill@gdit.com
+        Contact: carl.l.hill@outlook.com
     #>
     
     [CmdletBinding()]
